@@ -1,0 +1,2 @@
+STANFORD DATASET - https://ai.stanford.edu/~jkrause/cars/car_dataset.html
+DEEP CONVOLUTIONAL NEURAL NETWORK IN TF TUTORIAL - https://www.youtube.com/watch?v=qVwm-9P609I
