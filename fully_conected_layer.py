@@ -4,7 +4,7 @@
 def fully_connected_layer(input_data,input_shape):
     flattened = tf.reshape(input_data, [-1, input_shape[0] * input_shape[1] * input_shape[2]])
 
-    weights_1 = tf.Variable(tf.truncated_normal([input_shape[0] * input_shape[1] * input_shape[2]], 1000], stddev=0.03))
+    weights_1 = tf.Variable(tf.truncated_normal([input_shape[0] * input_shape[1] * input_shape[2], 1000], stddev=0.03))
     biases_1 = tf.Variable(tf.truncated_normal([1000], stddev=0.01))
     dense_layer1 = tf.matmul(flattened, weights_1) + biases_1
     dense_layer1 = tf.nn.relu(dense_layer1)
