@@ -1,5 +1,5 @@
 from data.data_loader import DataLoader
-from convolution_functions import convolution_layer
+from convolution_functions import convolution_layer, max_pool_layer
 import tensorflow as tf
 import numpy as np
 
@@ -31,14 +31,23 @@ result = convolution_layer(x,3,[2,2],1)
 tmp_dataset = []
 
 for element in dataset:
-    if element[1] == 1 or element[1] == 2:
-        tmp_dataset.append(element)
+    if element[1] == 13:
+        reshaped_image =  tf.reshape(element[0], [1, 28, 28, 3])
+        new_elem = [reshaped_image,element[1]]
+        tmp_dataset.append(new_elem)
 
-print(len(tmp_dataset))
 
+
+first_layer = convolution_layer(tmp_dataset[0][0],3,[2,2],1)
+print(first_layer)
+pooled_first_layer = max_pool_layer(first_layer,[2,2],[1,2,2,1])
+
+print(pooled_first_layer)
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
+    print( sess.run(pooled_first_layer))
+   
     
     
     

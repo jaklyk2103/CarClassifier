@@ -17,5 +17,6 @@ def max_pool_layer(input_data,window_size,strides):
     ksize = [1,window_size[0],window_size[1],1]
     out_layer = tf.nn.max_pool(input_data, ksize=ksize, strides=strides, 
                                padding='SAME')
+    return out_layer
 
     
