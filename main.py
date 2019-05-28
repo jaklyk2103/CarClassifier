@@ -9,7 +9,7 @@ training_annotations  = r'C:\Users\tomi8\Desktop\Dataset\devkit\cars_train_annos
 training_images = r'C:\Users\tomi8\Desktop\Dataset\cars_train'
 
 training_data_loader = DataLoader(classes_path,training_annotations,training_images)
-images=training_data_loader.getDataset()
+dataset=training_data_loader.getDataset()
 #dataset - zawiera pary (zdjecie, id klasy)
 
 
@@ -28,14 +28,18 @@ y = tf.placeholder("float", [None, classes_number])
 x = tf.reshape(x, [-1, 192, 192, 3])
 
 result = convolution_layer(x,3,[2,2],1)
+tmp_dataset = []
 
+for element in dataset:
+    if element[1] == 1 or element[1] == 2:
+        tmp_dataset.append(element)
 
-
+print(len(tmp_dataset))
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
-
+    
     
     
  

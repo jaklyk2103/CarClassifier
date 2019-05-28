@@ -62,17 +62,17 @@ class DataLoader:
         annotations_list = []
         print(all_image_paths[11])
         images_list = []
-        for counter in range(2):
-            print(counter)
+        for counter in range(2000):
             current_ann = annotations['annotations'][counter]
             element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
             current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
             annotations_list.append(element)
             images_list.append(self.__read_and_preprocess_image(all_image_paths[counter],element))
+
               
           
         
-        return images_list
+        return list(zip(images_list,image_class_id_list))
 
         
 
