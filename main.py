@@ -5,10 +5,20 @@ from training import cost_function, cost_minimalization
 import tensorflow as tf
 import numpy as np
 
+
+def map_image_class_to_array(image_class_id, number_of_classes):
+    result_array = []
+    for image_class in range(number_of_classes):
+        if image_class_id != image_class:
+            result_array.append(0)
+        else:
+            result_array.append(1)
+    return result_array
+
 #wczytywanie danych
-classes_path = r'C:\Users\kubec\Desktop\Dataset\devkit\cars_meta.mat'
-training_annotations  = r'C:\Users\kubec\Desktop\Dataset\devkit\cars_train_annos.mat' 
-training_images = r'C:\Users\kubec\Desktop\Dataset\cars_train'
+classes_path = r'C:\Users\kuba\Desktop\Dataset\devkit\cars_meta.mat'
+training_annotations  = r'C:\Users\kuba\Desktop\Dataset\devkit\cars_train_annos.mat' 
+training_images = r'C:\Users\kuba\Desktop\Dataset\cars_train'
 
 training_data_loader = DataLoader(classes_path,training_annotations,training_images)
 dataset=training_data_loader.getDataset()
@@ -34,9 +44,12 @@ result = convolution_layer(x,3,[2,2],1)
 tmp_dataset = []
 
 for element in dataset:
-    if element[1] == 13 or element[1] == 2:
+    if element[1] == 0 or element[1] == 1:
         reshaped_image =  tf.reshape(element[0], [1, 28, 28, 3])
-        new_elem = [reshaped_image,element[1]]
+        image_class_id_array = map_image_class_to_array(element[1], classes_number)
+        print('element[1]:')
+        print(image_class_id_array)
+        new_elem = [reshaped_image,image_class_id_array]
         tmp_dataset.append(new_elem)
 
 print(len(tmp_dataset))
