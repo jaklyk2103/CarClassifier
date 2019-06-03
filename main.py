@@ -24,12 +24,15 @@ training_data_loader = DataLoader(classes_path,training_annotations,training_ima
 dataset=training_data_loader.getDataset()
 #dataset - zawiera pary (zdjecie, id klasy)
 
+# parameters
+display_step = 10
 
 #network hyperparameters -> beda zmieniane w procesie "doskonalenia" sieci
 
 learning_rate = 0.001
 training_iters = 10
 batch_size = 25 # 128
+dropout = 0.75 # Dropout, probability to keep units
 
 
 classes_number = 2 #196
@@ -57,6 +60,7 @@ print(len(tmp_dataset))
 def map_predictions_to_classification(predictions):
         return tf.one_hot(tf.argmax(predictions,1),depth=2)
 
+# Constructing model
 first_layer = convolution_layer(tmp_dataset[0][0],3,[2,2],1)
 print(first_layer)
 pooled_first_layer = max_pool_layer(first_layer,[2,2],[1,2,2,1])
@@ -67,10 +71,18 @@ print(predictions)
 classification = map_predictions_to_classification(predictions)        
 print(classification)
 
+# loss and optimizer
+cost = cost_function(classification, y)
+optimizer = cost_minimalization(cost, learning_rate)
+
+# Evaluate model
+correct_pred = tf.equal(tf.argmax(classification, 1), tf.argmax(y, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
-    
+    step = 1
     batches_count = len(tmp_dataset)//batch_size
     currentAccuracy = 0
 
@@ -79,3 +91,13 @@ with tf.Session() as sess:
         print(sess.run(classification))
         for batch in range(batches_count):
                 data = tmp_dataset[batch * batch_size : (batch+1) * batch_size]
+                data_x = map(lambda x: x[0], data)
+                data_y = map(lambda x: x[1], data)
+                sess.run(optimizer, feed_fict={x: data_x, y:data_y, keep_prob: dropout })
+                if step % display_step == 0:
+                    loss, acc = sess.run([cost, accuracy], feed_dict={x:batch_x, y: batch_y, keep_prob: 1.})
+                    print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
+                        "{:.6f}".format(loss) + ", Training Accuracy= " + \
+                        "{:.5f}".format(acc))
+                step += 1
+        print("Optimization finished")
