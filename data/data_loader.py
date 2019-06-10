@@ -1,6 +1,8 @@
 import pathlib
 import scipy.io
 import tensorflow as tf
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
 
 
 
@@ -52,8 +54,8 @@ class DataLoader:
         all_image_paths = list(images_path.glob('*.jpg'))
         all_image_paths = [str(path) for path in all_image_paths]
 
-        image_class_id_list = [item['class'] -1 for item in annotations['annotations']]
-        
+        #image_class_id_list = [item['class'] -1 for item in annotations['annotations']]
+        image_class_id_list = []
 
 
         image_count = len(all_image_paths)
@@ -62,17 +64,21 @@ class DataLoader:
         annotations_list = []
         print(all_image_paths[11])
         images_list = []
-        for counter in range(500):
+        for counter in range(5000):
             current_ann = annotations['annotations'][counter]
             element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
             current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
-            annotations_list.append(element)
-            images_list.append(self.__read_and_preprocess_image(all_image_paths[counter],element))
+            if element.classId == 1 or element.classId == 2:
+                annotations_list.append(element)
+                images_list.append(self.__read_and_preprocess_image(all_image_paths[counter],element))
+                image_class_id_list.append(element.classId)
 
-              
-          
+        onehotencoder = OneHotEncoder(categorical_features = [0])
+        class_id_array = np.asarray(image_class_id_list).reshape(-1,1)
+        encoded_labels = onehotencoder.fit_transform(class_id_array).toarray()      
+        print(encoded_labels)
         
-        return list(zip(images_list,image_class_id_list))
+        return tf.data.Dataset.from_tensor_slices((images_list,encoded_labels))
 
         
 
