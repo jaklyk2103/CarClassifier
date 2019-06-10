@@ -11,3 +11,4 @@ def cost_function(predicted_output,expected_output):
 
 def cost_minimalization(cost,learning_rate):
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    return optimizer

@@ -64,7 +64,7 @@ class DataLoader:
         annotations_list = []
         print(all_image_paths[11])
         images_list = []
-        for counter in range(5000):
+        for counter in range(8144):
             current_ann = annotations['annotations'][counter]
             element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
             current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
@@ -76,7 +76,7 @@ class DataLoader:
         onehotencoder = OneHotEncoder(categorical_features = [0])
         class_id_array = np.asarray(image_class_id_list).reshape(-1,1)
         encoded_labels = onehotencoder.fit_transform(class_id_array).toarray()      
-        print(encoded_labels)
+        
         
         return tf.data.Dataset.from_tensor_slices((images_list,encoded_labels))
 

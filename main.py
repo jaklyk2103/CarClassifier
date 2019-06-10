@@ -55,14 +55,14 @@ def cnn_model(input):
         print(classification)
         return predictions
 
-#predictions = cnn_model()
+predictions = cnn_model(x)
 # loss and optimizer
-#cost = cost_function(predictions, y)
-#optimizer = cost_minimalization(cost, learning_rate)
+cost = cost_function(predictions, y)
+optimizer = cost_minimalization(cost, learning_rate)
 
 # Evaluate model
-#correct_pred = tf.equal(tf.argmax(classification, 1), tf.argmax(y, 1))
-#accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+correct_pred = tf.equal(tf.argmax(predictions, 1), tf.argmax(y, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -71,24 +71,22 @@ with tf.Session() as sess:
     batch_images, batch_labels = sess.run(data_batch)
     print('Images shape: {}'.format(batch_images.shape))
     print('Labels shape: {}'.format(batch_labels.shape))
-    print(batch_images[0])
     step = 1
     batches_count = 2
     currentAccuracy = 0
 
-#     for epoch in range(training_iters):
-#         currentAccuracy = 0
+    for epoch in range(training_iters):
+        currentAccuracy = 0
         
-#         for batch in range(batches_count):
+        for batch in range(batches_count):
                 
-#                 data_x = tmp_images_dataset[batch * batch_size : (batch+1) * batch_size]
-#                 data_y = tmp_labels_dataset[batch * batch_size : (batch+1) * batch_size]
-#                 print("data_x=",data_x)
-#                 sess.run(optimizer, feed_dict={x: data_x, y:data_y })
-#                 #if step % display_step == 0:
-#                 loss, acc = sess.run([cost, accuracy], feed_dict={x:batch_x, y: batch_y, keep_prob: 1.})
-#                 print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
-#                         "{:.6f}".format(loss) + ", Training Accuracy= " + \
-#                         "{:.5f}".format(acc))
-#                 step += 1
-#         print("Optimization finished")
+                 
+                
+                sess.run(optimizer, feed_dict={x: batch_images, y:batch_labels })
+                if step % display_step == 0:
+                        loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_images, y:batch_labels})
+                        print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
+                         "{:.6f}".format(loss) + ", Training Accuracy= " + \
+                         "{:.5f}".format(acc))
+                step += 1
+        print("Optimization finished")
