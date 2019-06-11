@@ -21,12 +21,12 @@ iterator = dataset.repeat().batch(batch_size).make_initializable_iterator()
 data_batch = iterator.get_next()
 
 # parameters
-display_step = 2
+display_step = 20
 
 #network hyperparameters -> beda zmieniane w procesie "doskonalenia" sieci
 
 learning_rate = 0.001
-training_iters = 10
+training_iters = 100
 
 dropout = 0.75 # Dropout, probability to keep units
 
@@ -68,9 +68,6 @@ with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
     sess.run(iterator.initializer)
-    batch_images, batch_labels = sess.run(data_batch)
-    print('Images shape: {}'.format(batch_images.shape))
-    print('Labels shape: {}'.format(batch_labels.shape))
     step = 1
     batches_count = 2
     currentAccuracy = 0
@@ -79,7 +76,7 @@ with tf.Session() as sess:
         currentAccuracy = 0
         
         for batch in range(batches_count):
-                
+                batch_images, batch_labels = sess.run(data_batch)
                  
                 
                 sess.run(optimizer, feed_dict={x: batch_images, y:batch_labels })
@@ -90,3 +87,8 @@ with tf.Session() as sess:
                          "{:.5f}".format(acc))
                 step += 1
         print("Optimization finished")
+        batch_images, batch_labels = sess.run(data_batch)
+        print("Testing Accuracy:", \
+        sess.run(accuracy, feed_dict={x: batch_images,
+                                      y: batch_labels,
+                                     }))

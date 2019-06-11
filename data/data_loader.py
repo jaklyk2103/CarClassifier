@@ -35,9 +35,10 @@ class DataLoader:
 
     def __preprocess_image(self,image, min_x, min_y, max_x, max_y, target_width, target_height):
         img_tensor=tf.image.decode_jpeg(image, channels=3)
-       # cropped_image=tf.image.crop_to_bounding_box(
-         #   img_tensor, min_y, min_x, max_y, max_x)
-        image=tf.image.resize_images(img_tensor, [28, 28])
+        cropped_x = max_x - min_x
+        cropped_y = max_y - min_y
+        cropped_image=tf.image.crop_to_bounding_box(img_tensor, min_y, min_x, cropped_y, cropped_x)
+        image=tf.image.resize_images(cropped_image, [28, 28])
         image /= 255.0  # normalize to [0,1] range
         return image
 
@@ -68,7 +69,7 @@ class DataLoader:
             current_ann = annotations['annotations'][counter]
             element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
             current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
-            if element.classId == 1 or element.classId == 2:
+            if element.classId == 2 or element.classId == 3:
                 annotations_list.append(element)
                 images_list.append(self.__read_and_preprocess_image(all_image_paths[counter],element))
                 image_class_id_list.append(element.classId)
