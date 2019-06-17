@@ -6,9 +6,9 @@ import tensorflow as tf
 import numpy as np
 
 #wczytywanie danych
-classes_path = r'C:\Users\tomi8\Desktop\Dataset\devkit\cars_meta.mat'
-training_annotations  = r'C:\Users\tomi8\Desktop\Dataset\devkit\cars_train_annos.mat' 
-training_images = r'C:\Users\tomi8\Desktop\Dataset\cars_train'
+classes_path = r'C:\Users\kubec\Desktop\Dataset\devkit\cars_meta.mat'
+training_annotations  = r'C:\Users\kubec\Desktop\Dataset\devkit\cars_train_annos.mat' 
+training_images = r'C:\Users\kubec\Desktop\Dataset\cars_train'
 
 training_data_loader = DataLoader(classes_path,training_annotations,training_images)
 dataset=training_data_loader.getDataset()
@@ -26,7 +26,7 @@ display_step = 20
 #network hyperparameters -> beda zmieniane w procesie "doskonalenia" sieci
 
 learning_rate = 0.001
-training_iters = 100
+training_iters = 200000
 
 dropout = 0.75 # Dropout, probability to keep units
 
@@ -86,9 +86,4 @@ with tf.Session() as sess:
                          "{:.6f}".format(loss) + ", Training Accuracy= " + \
                          "{:.5f}".format(acc))
                 step += 1
-        print("Optimization finished")
         batch_images, batch_labels = sess.run(data_batch)
-        print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={x: batch_images,
-                                      y: batch_labels,
-                                     }))
