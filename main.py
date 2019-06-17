@@ -21,12 +21,12 @@ iterator = dataset.repeat().batch(batch_size).make_initializable_iterator()
 data_batch = iterator.get_next()
 
 # parameters
-display_step = 20
+display_step = 1
 
 #network hyperparameters -> beda zmieniane w procesie "doskonalenia" sieci
 
-learning_rate = 0.001
-training_iters = 100
+learning_rate = 0.01
+training_iters = 5
 
 dropout = 0.75 # Dropout, probability to keep units
 
@@ -61,8 +61,14 @@ cost = cost_function(predictions, y)
 optimizer = cost_minimalization(cost, learning_rate)
 
 # Evaluate model
-correct_pred = tf.equal(tf.argmax(predictions, 1), tf.argmax(y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+prediction = tf.argmax(predictions, 1)
+labels_argmax =  tf.argmax(y, 1)
+equality = tf.equal(prediction, labels_argmax)
+accuracy = tf.reduce_mean(tf.cast(equality, tf.float32))
+
+
+#correct_pred = tf.equal(tf.argmax(predictions, 1), tf.argmax(y, 1))
+#accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -81,14 +87,24 @@ with tf.Session() as sess:
                 
                 sess.run(optimizer, feed_dict={x: batch_images, y:batch_labels })
                 if step % display_step == 0:
-                        loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_images, y:batch_labels})
+                        #print("predictions:",sess.run(predictions,feed_dict={x: batch_images, y:batch_labels}))
+                        #print(predictions)
+                        #print("labels",batch_labels)
+                        #print("prediction:",sess.run(prediction,feed_dict={x: batch_images, y:batch_labels}))
+                        #print("labels_argmax:",sess.run(labels_argmax,feed_dict={x: batch_images, y:batch_labels}))
+                        #print("equality:",sess.run(equality,feed_dict={x: batch_images, y:batch_labels}))
+                        #print("accuracy:",sess.run(accuracy,feed_dict={x: batch_images, y:batch_labels}))
+                        loss, acc,predictions,prediction,labels_argmax,equality = sess.run([cost, accuracy,predictions,prediction,labels_argmax,equality], feed_dict={x: batch_images, y:batch_labels})
+                        print("predictions:",predictions)
+                        print("prediction:",prediction)
+                        print("labels_argmax:", labels_argmax)
+                        print("equality",equality)
                         print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
                          "{:.6f}".format(loss) + ", Training Accuracy= " + \
                          "{:.5f}".format(acc))
                 step += 1
-        print("Optimization finished")
         batch_images, batch_labels = sess.run(data_batch)
-        print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={x: batch_images,
-                                      y: batch_labels,
-                                     }))
+        #print("Testing Accuracy:", \
+        #sess.run(accuracy, feed_dict={x: batch_images,
+        #                              y: batch_labels,
+        #                             }))
