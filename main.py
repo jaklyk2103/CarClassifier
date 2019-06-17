@@ -32,24 +32,24 @@ dropout = 0.75 # Dropout, probability to keep units
 
 
 classes_number = 2 #196
-image_size = 28 #????? musimy wybrac rozmiar zdjec 
+image_size = 128 #????? musimy wybrac rozmiar zdjec 
 
-x = tf.placeholder("float", [None, image_size,image_size,3])
+x = tf.placeholder("float", [None, image_size,image_size,1])
 y = tf.placeholder("float", [None, classes_number])
 
-x = tf.reshape(x, [-1, image_size, image_size, 3])
+x = tf.reshape(x, [-1, image_size, image_size, 1])
 
 def map_predictions_to_classification(predictions):
         return tf.one_hot(tf.argmax(predictions,1),depth=2)
 
 # Constructing model
 def cnn_model(input):
-        first_layer = convolution_layer(input,3,[2,2],1)
+        first_layer = convolution_layer(input,1,[2,2],1)
         print(first_layer)
         pooled_first_layer = max_pool_layer(first_layer,[2,2],[1,2,2,1])
         print(pooled_first_layer)
         pooled_layer_shape = pooled_first_layer.get_shape()
-        predictions = fully_connected_layer(pooled_first_layer, [14,14,1])
+        predictions = fully_connected_layer(pooled_first_layer, [64,64,1])
         print(predictions)
         classification = map_predictions_to_classification(predictions)        
         print(classification)

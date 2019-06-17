@@ -34,18 +34,18 @@ class DataLoader:
         self.images_path = images_path
 
     def __preprocess_image(self,image, min_x, min_y, max_x, max_y, target_width, target_height):
-        img_tensor=tf.image.decode_jpeg(image, channels=3)
+        img_tensor=tf.image.decode_jpeg(image, channels=1)
         cropped_x = max_x - min_x
         cropped_y = max_y - min_y
         cropped_image=tf.image.crop_to_bounding_box(img_tensor, min_y, min_x, cropped_y, cropped_x)
-        image=tf.image.resize_images(cropped_image, [28, 28])
+        image=tf.image.resize_images(cropped_image, [target_width, target_height])
         image /= 255.0  # normalize to [0,1] range
         return image
 
     def __read_and_preprocess_image(self,path, annotations):
         img_raw=tf.read_file(path)
         return self.__preprocess_image(img_raw, annotations.min_x,
-        annotations.min_y, annotations.max_x, annotations.max_y, 28, 28)
+        annotations.min_y, annotations.max_x, annotations.max_y, 128, 128)
 
     def getDataset(self):
         classes = scipy.io.loadmat(self.classes_path)
