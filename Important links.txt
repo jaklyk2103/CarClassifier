@@ -1,6 +1,0 @@
-STANFORD DATASET - https://ai.stanford.edu/~jkrause/cars/car_dataset.html
-DEEP CONVOLUTIONAL NEURAL NETWORK IN TF TUTORIAL - https://www.youtube.com/watch?v=qVwm-9P609I
-
-TF LOAD DATA TUTORIAL - z tego tutoriala robie wczytywanie obrazów https://www.tensorflow.org/tutorials/load_data/images
-£ADOWANIE DANYCH .MAT - https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.loadmat.html
-WIEDZA - https://docs.google.com/document/d/1MqgDDniVqWagVSl5wkg4VY-oE2CAYXX-Jrfgv5hbHEw/edit?usp=sharing 
