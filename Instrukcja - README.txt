@@ -24,3 +24,6 @@ react-native link
 
 
 react-native android-run wystarczy odpaliæ raz, ta komenda uruchamia taki serwer (nazywa siê chyba Metro), który obs³uguje komunikacjê z urz¹dzeniem w kwestii zmian w kodzie. Na samym urz¹dzeniu poprzez "shake" mo¿esz uruchomiæ ma³e menu i tam odpaliæ bodaj¿e "Live Reload", co pozwoli na automatyczne prze³adowywanie aplikacji po zapisaniu pliku .js z dowolnymi zmianami. (Niektóre zmiany w kodzie, np. w state komponentu wymagaj¹ rêcznego prze³adowania aplikacji, w tym ma³ym menu po "shake" jest te¿ opcja Reload.)
+
+
+Ogólnie do szukania informacji bardzo dobra jest ta oficjalna strona: facebook.github.io
