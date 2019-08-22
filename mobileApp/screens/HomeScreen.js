@@ -97,10 +97,15 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.welcomeWrapper}>
+          <Text style={styles.welcome}>
+            Welcome to the Car Classifier!
+          </Text>
+        </View>
         <TouchableOpacity
           style={styles.button}
           onPress={this.onPress.bind(this)}>
-          <Text>Open Camera</Text>
+          <Text style={styles.buttonText}>TAKE PHOTO OF A CAR</Text>
         </TouchableOpacity>
       </View>
     );
@@ -112,13 +117,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#FFB74D',
+  },
+  welcomeWrapper: {
+    justifyContent: 'flex-start',
+    marginBottom: 350
+  },
+  welcome: {
+    textAlign: 'center',
+    fontSize: 35,
+    fontWeight: 'bold',
   },
   button: {
     alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
+    justifyContent: 'center',
+    backgroundColor: '#EEEEEE',
     width: 300,
-    marginTop: 16,
+    height: 50,
   },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '900',
+  }
 });
