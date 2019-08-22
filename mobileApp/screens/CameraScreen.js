@@ -109,7 +109,7 @@ export default class CameraScreen extends React.Component {
         return (
         <CameraKitCameraScreen
             // Buttons to perform action done and cancel
-            actions={{ rightButtonText: 'Done', leftButtonText: 'Cancel' }}
+            actions={{ rightButtonText: 'Classify', leftButtonText: 'Cancel' }}
             onBottomButtonPressed={event => this.onBottomButtonPressed(event)}
             flashImages={{
             // Flash button images
@@ -118,7 +118,7 @@ export default class CameraScreen extends React.Component {
             auto: require('../assets/flashauto.png'),
             }}
             cameraFlipImage={require('../assets/flip.png')}
-            captureButtonImage={require('../assets/capture.png')}
+            captureButtonImage={require('../assets/camera64.png')}
         />
         );
     }
