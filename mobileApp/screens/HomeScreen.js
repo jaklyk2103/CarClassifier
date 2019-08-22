@@ -19,10 +19,6 @@ export default class HomeScreen extends React.Component {
     super(props);
   }
 
-  static navigationOptions = {
-    title: 'Welcome',
-  };
-
   onPress() {
     var that = this;
     if (Platform.OS === 'android') {

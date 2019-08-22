@@ -5,8 +5,17 @@ import HomeScreen from './screens/HomeScreen';
 import CameraScreen from './screens/CameraScreen';
 
 const MainNavigator = createStackNavigator({
-  Home: {screen: HomeScreen},
-  Camera: {screen: CameraScreen},
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: {
+      title: 'Welcome',
+      header: null
+    }},
+  Camera: {screen: CameraScreen,
+    navigationOptions: {
+      title: 'Camera',
+      header: null
+    }},  
 });
 
 const App = createAppContainer(MainNavigator);
