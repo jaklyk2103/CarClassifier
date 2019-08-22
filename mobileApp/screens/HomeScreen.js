@@ -1,17 +1,12 @@
-//This is an example code for the camera//
 import React from 'react';
-//import react in our code.
 import {
   StyleSheet,
   Text,
   View,
-  Alert,
-  ActivityIndicator,
   PermissionsAndroid,
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import CameraScreen from './CameraScreen';
  
 export default class HomeScreen extends React.Component {
   state = { isPermitted: false };
@@ -99,9 +94,7 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-
   render() {
-    const {navigate} = this.props.navigation;
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -113,6 +106,7 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

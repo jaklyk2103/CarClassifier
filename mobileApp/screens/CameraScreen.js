@@ -1,13 +1,9 @@
 import React from 'react';
 import {
   StyleSheet,
-  Text,
-  View,
   Alert,
-  ActivityIndicator,
   PermissionsAndroid,
   Platform,
-  TouchableOpacity,
 } from 'react-native';
 import { CameraKitCameraScreen } from 'react-native-camera-kit';
  
@@ -127,18 +123,3 @@ export default class CameraScreen extends React.Component {
         );
     }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-  },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
-    width: 300,
-    marginTop: 16,
-  },
-});
