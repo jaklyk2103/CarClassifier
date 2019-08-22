@@ -8,9 +8,6 @@ import {
 import { CameraKitCameraScreen } from 'react-native-camera-kit';
  
 export default class CameraScreen extends React.Component {
-    state = { 
-        userWantsToExitCamera: false 
-    };
   constructor(props) {
     super(props);
   }
