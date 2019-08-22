@@ -90,7 +90,6 @@ export default class HomeScreen extends React.Component {
       this.requestCameraPermission()
       .then((permission) => {
         if (permission === true) {
-          console.warn('im in');
           const {navigate} = this.props.navigation;
           navigate('Camera', {});
         }
