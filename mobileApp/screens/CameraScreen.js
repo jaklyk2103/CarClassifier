@@ -101,8 +101,8 @@ export default class CameraScreen extends React.Component {
           onBottomButtonPressed={event => this.onBottomButtonPressed(event)}
           flashImages={{
           // Flash button images
-          on: require('../assets/flashon.png'),
           off: require('../assets/flashoff.png'),
+          on: require('../assets/flashon.png'),
           auto: require('../assets/flashauto.png'),
           }}
           cameraFlipImage={require('../assets/flip.png')}

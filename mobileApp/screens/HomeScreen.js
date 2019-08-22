@@ -9,88 +9,94 @@ import {
 } from 'react-native';
  
 export default class HomeScreen extends React.Component {
-  state = { isPermitted: false };
+
   constructor(props) {
     super(props);
+    this.handleTakePhotoClick = this.handleTakePhotoClick.bind(this);
+    this.requestCameraPermission = this.requestCameraPermission.bind(this);
+    this.requestExternalReadPermission = this.requestExternalReadPermission.bind(this);
+    this.requestExternalWritePermission = this.requestExternalWritePermission.bind(this);
   }
 
-  onPress() {
-    var that = this;
-    if (Platform.OS === 'android') {
-      async function requestCameraPermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-            {
-              title: 'CameraExample App Camera Permission',
-              message: 'CameraExample App needs access to your camera ',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //If CAMERA Permission is granted
-            //Calling the WRITE_EXTERNAL_STORAGE permission function
-            requestExternalWritePermission();
-          } else {
-            alert('CAMERA permission denied');
-          }
-        } catch (err) {
-          alert('Camera permission err', err);
-          console.warn(err);
+  async requestCameraPermission() {
+    try {
+      const permissionResult = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'CarClassifier App Camera Permission',
+          message: 'CarClassifier App needs access to your camera',
         }
+      );
+      if (permissionResult === PermissionsAndroid.RESULTS.GRANTED) {
+        return await this.requestExternalWritePermission().then((permission) => {
+          return (permission) ? true : false;
+        });
+      } else {
+        alert('Camera permission denied, application cannot use camera.');
       }
-      async function requestExternalWritePermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'CameraExample App External Storage Write Permission',
-              message:
-                'CameraExample App needs access to Storage data in your SD Card ',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //If WRITE_EXTERNAL_STORAGE Permission is granted
-            //Calling the READ_EXTERNAL_STORAGE permission function
-            requestExternalReadPermission();
-          } else {
-            alert('WRITE_EXTERNAL_STORAGE permission denied');
-          }
-        } catch (err) {
-          alert('Write permission err', err);
-          console.warn(err);
-        }
-      }
-      async function requestExternalReadPermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-            {
-              title: 'CameraExample App Read Storage Read Permission',
-              message: 'CameraExample App needs access to your SD Card ',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //If READ_EXTERNAL_STORAGE Permission is granted
-            //changing the state to re-render and open the camera
-            //in place of activity indicator
-            that.setState({ isPermitted: true });
-          } else {
-            alert('READ_EXTERNAL_STORAGE permission denied');
-          }
-        } catch (err) {
-          alert('Read permission err', err);
-          console.warn(err);
-        }
-      }
-      //Calling the camera permission function
-      requestCameraPermission();
-    } else {
-      this.setState({ isPermitted: true });
+    } catch (err) {
+      alert('Camera permission err', err);
+      console.warn(err);
     }
+  }
 
-    if (this.state.isPermitted == true) {
-      const {navigate} = this.props.navigation;
-      navigate('Camera', {});
+  async requestExternalWritePermission() {
+    try {
+      const permissionResult = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'CarClassifier App External Storage Write Permission',
+          message:
+            'CarClassifier App needs access to Storage data in your SD Card',
+        }
+      );
+      if (permissionResult === PermissionsAndroid.RESULTS.GRANTED) {
+        return await this.requestExternalReadPermission().then((permission) => {
+          return (permission) ? true : false;
+        });
+      } else {
+        alert('WRITE_EXTERNAL_STORAGE permission denied');
+      }
+    } catch (err) {
+      alert('Write permission err', err);
+      console.warn(err);
+    }
+  }
+
+  async requestExternalReadPermission() {
+    try {
+      const permissionResult = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'CarClassifier App Read Storage Read Permission',
+          message: 'CarClassifier App needs access to your SD Card ',
+        }
+      );
+      if (permissionResult === PermissionsAndroid.RESULTS.GRANTED) {
+        // all permissions granted
+        return true;
+      } else {
+        alert('READ_EXTERNAL_STORAGE permission denied');
+        return false;
+      }
+    } catch (err) {
+      alert('Read permission err', err);
+      console.warn(err);
+    }
+  }
+
+  handleTakePhotoClick() {
+    if (Platform.OS === 'android') {
+      this.requestCameraPermission()
+      .then((permission) => {
+        if (permission === true) {
+          console.warn('im in');
+          const {navigate} = this.props.navigation;
+          navigate('Camera', {});
+        }
+      });
+    } else {
+      alert('Not an Android device. Application cannot be used.');
     }
   }
 
@@ -104,7 +110,7 @@ export default class HomeScreen extends React.Component {
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={this.onPress.bind(this)}>
+          onPress={this.handleTakePhotoClick}>
           <Text style={styles.buttonText}>TAKE PHOTO OF A CAR</Text>
         </TouchableOpacity>
       </View>
