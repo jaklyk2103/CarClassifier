@@ -1,8 +1,7 @@
 import React from 'react';
 import {
-  Alert,
-  PermissionsAndroid,
-  Platform,
+  Text,
+  View,
 } from 'react-native';
  
 export default class ClassifyScreen extends React.Component {
