@@ -3,6 +3,8 @@ import {
   Text,
   View,
 } from 'react-native';
+
+import LoadingAnimation from './../components/loadingAnimation';
  
 export default class ClassifyScreen extends React.Component {
   constructor(props) {
@@ -15,6 +17,7 @@ export default class ClassifyScreen extends React.Component {
           <Text>
             Classifying given image here... To be done.
           </Text>
+          <LoadingAnimation show={true}></LoadingAnimation>
         </View>
       );
   }
