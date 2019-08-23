@@ -1,3 +1,5 @@
+// https://www.youtube.com/watch?v=V2mM_ybQGoI
+
 import React, { Component } from 'react';
 import {
     View, Animated, Image
