@@ -1,8 +1,11 @@
-import pathlib
+import tarfile
 import scipy.io
-import tensorflow as tf
-from sklearn.preprocessing import OneHotEncoder
 import numpy as np
+import os
+import cv2 as cv
+import shutil
+import random
+from console_progressbar import ProgressBar
 
 
 
@@ -23,63 +26,115 @@ class ImageAnnotations:
         self.classId = classId
 
 
-class DataLoader:
-    classes_path = ''
-    annotations_path = ''
-    images_path = ''
-
-    def __init__(self, classes_path, annotations_path, images_path):
-        self.classes_path = classes_path
-        self.annotations_path = annotations_path
-        self.images_path = images_path
-
-    def __preprocess_image(self,image, min_x, min_y, max_x, max_y, target_width, target_height):
-        img_tensor=tf.image.decode_jpeg(image, channels=1)
-        cropped_x = max_x - min_x
-        cropped_y = max_y - min_y
-        cropped_image=tf.image.crop_to_bounding_box(img_tensor, min_y, min_x, cropped_y, cropped_x)
-        image=tf.image.resize_images(cropped_image, [target_width, target_height])
-        image /= 255.0  # normalize to [0,1] range
-        return image
-
-    def __read_and_preprocess_image(self,path, annotations):
-        img_raw=tf.read_file(path)
-        return self.__preprocess_image(img_raw, annotations.min_x,
-        annotations.min_y, annotations.max_x, annotations.max_y, 128, 128)
-
-    def getDataset(self):
-        classes = scipy.io.loadmat(self.classes_path)
-        annotations = scipy.io.loadmat(self.annotations_path,squeeze_me=True)
-        images_path = pathlib.Path(self.images_path)
-
-        all_image_paths = list(images_path.glob('*.jpg'))
-        all_image_paths = [str(path) for path in all_image_paths]
-
-        #image_class_id_list = [item['class'] -1 for item in annotations['annotations']]
-        image_class_id_list = []
 
 
-        image_count = len(all_image_paths)
-        print("loaded", image_count, "images")
 
-        annotations_list = []
-        print(all_image_paths[11])
-        images_list = []
-        for counter in range(8144):
-            current_ann = annotations['annotations'][counter]
-            element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
-            current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
-            if element.classId == 2 or element.classId == 3:
-                annotations_list.append(element)
-                images_list.append(self.__read_and_preprocess_image(all_image_paths[counter],element))
-                image_class_id_list.append(element.classId)
+    
 
-        onehotencoder = OneHotEncoder(categorical_features = [0])
-        class_id_array = np.asarray(image_class_id_list).reshape(-1,1)
-        encoded_labels = onehotencoder.fit_transform(class_id_array).toarray()      
+def preprocess_image(image, min_x, min_y, max_x, max_y, target_width, target_height):
         
+    height, width = image.shape[:2]
+    margin = 16
         
-        return tf.data.Dataset.from_tensor_slices((images_list,encoded_labels))
+    x1 = max(0, min_x - margin)
+    y1 = max(0, min_y - margin)
+    x2 = min(max_x + margin, width)
+    y2 = min(max_y + margin, height)
+        
+    cropped = image[y1:y2, x1:x2]
+    resized = cv.resize(src=cropped, dsize=(target_height, target_width))
+        
+    return resized
 
+def ensure_folder(folder):
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+def save_preprocessed_image(src_path,dst_path, annotations):
+    image_raw = cv.imread(src_path)
+    image = preprocess_image(image_raw, annotations.min_x,
+    annotations.min_y, annotations.max_x, annotations.max_y, 224, 224)
+    cv.imwrite(dst_path, image)
+
+def prepare_train_dataset(classes_path,annotations_path,images_path,desired_classes=None):
+    classes = scipy.io.loadmat(classes_path)
+    annotations = scipy.io.loadmat(annotations_path,squeeze_me=True)
+    print("number of images: ",len(annotations['annotations']))
+
+    pb = ProgressBar(total=100, prefix='Processing train images...', suffix='', decimals=1, length=20, fill='=')
+
+    train_dataset_ratio = 0.8
+    validation_dataset_ratio = 0.2
+    image_count = len(annotations['annotations'])
+
+    train_images_number = int(round(image_count * train_dataset_ratio))
+    train_images_ids = random.sample(range(image_count), train_images_number)
+
+    class_names =classes['class_names']
+    class_names = np.transpose(class_names)
+    
+    output_file= open("Output.txt","w+")
+    
+    for id in desired_classes:
+        output_file.write(class_names[id-1][0][0] + '\n')
+        
+    output_file.close()
+    for counter in range(image_count):
+        current_ann = annotations['annotations'][counter]
+        element = ImageAnnotations(current_ann['bbox_x1'], current_ann['bbox_y1'],
+        current_ann['bbox_x2'], current_ann['bbox_y2'], current_ann['fname'], current_ann['class'])
+           
+        src_path = os.path.join(images_path, element.name)
+        if counter in train_images_ids:
+            dst_folder = 'data/train'
+        else:
+            dst_folder = 'data/valid'
+
+        dst_path = os.path.join(dst_folder, str(element.classId))
+        
+        pb.print_progress_bar((counter + 1) * 100 / image_count)
+
+        if desired_classes is None or element.classId in desired_classes:
+            if not os.path.exists(dst_path):
+                os.makedirs(dst_path)
+            dst_path = os.path.join(dst_path, element.name)
+            save_preprocessed_image(src_path,dst_path,element)
+        
+    
+if __name__ == '__main__':
+
+    print('Extracting cars_train.tgz...')
+    if not os.path.exists('data\Dataset\cars_train'):
+       with tarfile.open('data\Dataset\cars_train.tgz', "r:gz") as tar:
+           tar.extractall()
+
+    #print('Extracting cars_test.tgz...')
+    #if not os.path.exists('cars_test'):
+     #   with tarfile.open('cars_test.tgz', "r:gz") as tar:
+      #      tar.extractall()
+    #print('Extracting car_devkit.tgz...')
+    #if not os.path.exists('devkit'):
+     #   with tarfile.open('car_devkit.tgz', "r:gz") as tar:
+      #      tar.extractall()
+
+    classes_path = 'data\devkit\cars_meta.mat'
+    training_annotations  ='data\devkit\cars_train_annos.mat' 
+    training_images = 'data\Dataset\cars_train'
+
+
+    cars_meta = scipy.io.loadmat(classes_path)
+    class_names = cars_meta['class_names']  # shape=(1, 196)
+    class_names = np.transpose(class_names)
+    print('class_names.shape: ' + str(class_names.shape))
+    print('Sample class_name: [{}]'.format(class_names[8][0][0]))
+
+    ensure_folder('data/train')
+    ensure_folder('data/valid')
+    ensure_folder('data/test')
+
+    prepare_train_dataset(classes_path,training_annotations,training_images, desired_classes=[1,2,4])
+
+
+    # shutil.rmtree('devkit')
         
 

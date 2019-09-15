@@ -11,27 +11,29 @@ training_annotations  = r'C:\Users\tomi8\Desktop\Dataset\devkit\cars_train_annos
 training_images = r'C:\Users\tomi8\Desktop\Dataset\cars_train'
 
 training_data_loader = DataLoader(classes_path,training_annotations,training_images)
-dataset=training_data_loader.getDataset()
+dataset,validation=training_data_loader.getDataset()
 #dataset - zawiera pary (zdjecie, id klasy)
 print(dataset)
 
 #graf pobierajacy batch zdjec z datasetu
 batch_size = 25 # 128
 iterator = dataset.repeat().batch(batch_size).make_initializable_iterator()
+validation_iterator = validation.repeat().batch(15).make_initializable_iterator()
 data_batch = iterator.get_next()
+validation_batch = validation_iterator.get_next()
 
 # parameters
-display_step = 20
+display_step = 50
 
 #network hyperparameters -> beda zmieniane w procesie "doskonalenia" sieci
 
-learning_rate = 0.001
-training_iters = 100
+learning_rate = 0.0001
+training_iters = 100000
 
 dropout = 0.75 # Dropout, probability to keep units
 
 
-classes_number = 2 #196
+classes_number = 4 #196
 image_size = 128 #????? musimy wybrac rozmiar zdjec 
 
 x = tf.placeholder("float", [None, image_size,image_size,1])
@@ -63,11 +65,12 @@ optimizer = cost_minimalization(cost, learning_rate)
 # Evaluate model
 correct_pred = tf.equal(tf.argmax(predictions, 1), tf.argmax(y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-
+show=False
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
     sess.run(iterator.initializer)
+    sess.run(validation_iterator.initializer)
     step = 1
     batches_count = 2
     currentAccuracy = 0
@@ -81,14 +84,16 @@ with tf.Session() as sess:
                 
                 sess.run(optimizer, feed_dict={x: batch_images, y:batch_labels })
                 if step % display_step == 0:
-                        loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_images, y:batch_labels})
+                        show=True
+                        loss, acc,pred = sess.run([cost, accuracy,predictions], feed_dict={x: batch_images, y:batch_labels})
                         print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
                          "{:.6f}".format(loss) + ", Training Accuracy= " + \
                          "{:.5f}".format(acc))
                 step += 1
-        print("Optimization finished")
-        batch_images, batch_labels = sess.run(data_batch)
-        print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={x: batch_images,
-                                      y: batch_labels,
+        if show==True:
+                show=False
+                validation_images, validation_labels = sess.run(validation_batch)
+                print("Testing Accuracy:", \
+                sess.run(accuracy, feed_dict={x: validation_images,
+                                     y: validation_labels,
                                      }))
