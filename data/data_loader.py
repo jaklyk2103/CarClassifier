@@ -9,6 +9,7 @@ from console_progressbar import ProgressBar
 
 
 
+
 class ImageAnnotations:
     min_x = 0
     min_y = 0
@@ -52,7 +53,8 @@ def ensure_folder(folder):
 
 def save_preprocessed_image(src_path,dst_path, annotations):
     image_raw = cv.imread(src_path)
-    image = preprocess_image(image_raw, annotations.min_x,
+    image_grey = cv.cvtColor(image_raw, cv.COLOR_BGR2GRAY)
+    image = preprocess_image(image_grey, annotations.min_x,
     annotations.min_y, annotations.max_x, annotations.max_y, 224, 224)
     cv.imwrite(dst_path, image)
 
@@ -132,7 +134,7 @@ if __name__ == '__main__':
     ensure_folder('data/valid')
     ensure_folder('data/test')
 
-    prepare_train_dataset(classes_path,training_annotations,training_images, desired_classes=[1,2,4])
+    prepare_train_dataset(classes_path,training_annotations,training_images, desired_classes=[190,196,5,85])
 
 
     # shutil.rmtree('devkit')
