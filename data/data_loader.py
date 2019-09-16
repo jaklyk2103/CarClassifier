@@ -110,14 +110,11 @@ if __name__ == '__main__':
        with tarfile.open('data\Dataset\cars_train.tgz', "r:gz") as tar:
            tar.extractall()
 
-    #print('Extracting cars_test.tgz...')
-    #if not os.path.exists('cars_test'):
-     #   with tarfile.open('cars_test.tgz', "r:gz") as tar:
-      #      tar.extractall()
-    #print('Extracting car_devkit.tgz...')
-    #if not os.path.exists('devkit'):
-     #   with tarfile.open('car_devkit.tgz', "r:gz") as tar:
-      #      tar.extractall()
+
+    print('Extracting car_devkit.tgz...')
+    if not os.path.exists('data\devkit'):
+       with tarfile.open('data\car_devkit.tgz', "r:gz") as tar:
+              tar.extractall()
 
     classes_path = 'data\devkit\cars_meta.mat'
     training_annotations  ='data\devkit\cars_train_annos.mat' 
